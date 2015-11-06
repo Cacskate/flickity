@@ -103,7 +103,8 @@ Flickity.defaults = {
   percentPosition: true,
   resize: true,
   selectedAttraction: 0.025,
-  setGallerySize: true
+  setGallerySize: true,
+  autoHeight: false
   // watchCSS: false,
   // wrapAround: false
 };
@@ -142,6 +143,10 @@ Flickity.prototype._create = function() {
   for ( var i=0, len = Flickity.createMethods.length; i < len; i++ ) {
     var method = Flickity.createMethods[i];
     this[ method ]();
+  }
+
+  if( this.options.autoHeight ) {
+    this.viewport.style.cssText += ' -webkit-transition:height 300ms ease-out; transition:height 300ms ease-out;';
   }
 
   if ( this.options.watchCSS ) {
@@ -324,6 +329,12 @@ Flickity.prototype.setGallerySize = function() {
   }
 };
 
+Flickity.prototype.setAutoheight = function() {
+  if ( this.options.autoHeight ) {
+    this.viewport.style.height = this.selectedElement.offsetHeight + 'px';
+  }
+};
+
 Flickity.prototype._getWrapShiftCells = function() {
   // only for wrap-around
   if ( !this.options.wrapAround ) {
@@ -443,6 +454,7 @@ Flickity.prototype.select = function( index, isWrap ) {
   if ( this.cells[ index ] ) {
     this.selectedIndex = index;
     this.setSelectedCell();
+    this.setAutoheight();
     this.startAnimation();
     this.dispatchEvent('cellSelect');
   }
@@ -591,6 +603,7 @@ Flickity.prototype.resize = function() {
   this.positionCells();
   this._getWrapShiftCells();
   this.setGallerySize();
+  this.setAutoheight();
   this.positionSliderAtSelected();
 };
 
